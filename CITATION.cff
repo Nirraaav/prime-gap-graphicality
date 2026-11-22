@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the paper below."
+title: "Code for: Improved explicit bounds for the graphicality of the prime gap sequence"
+authors:
+  - family-names: Bhattad
+    given-names: Nirav
+license: MIT
+repository-code: "https://github.com/Nirraaav/prime-gap-graphicality"
+preferred-citation:
+  type: article
+  title: "Improved explicit bounds for the graphicality of the prime gap sequence"
+  authors:
+    - family-names: Bhattad
+      given-names: Nirav
+  year: 2026
