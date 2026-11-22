@@ -9,7 +9,7 @@ Hypothesis, the paper proves:
 | Result | Threshold (t = log log p_n) | Script |
 |---|---|---|
 | Theorem 1.2: PD_n is graphic | t ≥ 25.2502 | `certify_improved.py` |
-| Theorem 1.3: every realization of PD_n has (p_{n+1} − p_n)/2 independent edges | t ≥ 26.246 | `certify_dpg.py` |
+| Theorem 1.3: every realization of PD_n has (p_{n+1} − p_n)/2 independent edges | t ≥ 26.285 | `certify_dpg.py` |
 | Theorem 1.5: a prime in (x, x + x^{2/3}] | log log x ≥ 24.83 | `short_interval.py` |
 | Proposition 5.1: Bellotti's log-free density constant for exp(6.7·10¹²) < T ≤ exp(2·10¹³), σ ≥ 0.994 | C = 1.67·10¹¹ | `bellotti_extend.py` |
 | Section 9: necessary condition and one-zero barrier | t < 20.20 | `barrier.py` |
@@ -33,8 +33,8 @@ mpmath at 40 significant digits, in log space, because x = exp(exp(t)).
 - `dpg_improved.py`: the DPG margin and the grid scan, with published inputs only. Usage:
   `python3 dpg_improved.py c0 t0 t1 step`.
 - `dpg_close.py`: adds Proposition 5.1 to the DPG scan for 30.0 < t < 30.43.
-- `certify_dpg.py`: Theorem 1.3 on [26.246, 80], with and without Proposition 5.1.
-- `dpg_hole_partial.py`: the partial DPG statement for (30.001, 30.417) when the next gap is at most
+- `certify_dpg.py`: Theorem 1.3 on [26.285, 80], with and without Proposition 5.1.
+- `dpg_hole_partial.py`: the partial DPG statement for (30.001, 30.412) when the next gap is at most
   exp(6.6999·10¹²).
 - `short_interval.py`: Theorem 1.5.
 - `thresholds.py`: shared margin functions, the short-interval margin, and the final inequality of

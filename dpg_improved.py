@@ -49,7 +49,8 @@ def block_logT(t, theta):
 
 def margin_from_zero_sum(logx, logT, zs):
     cL = 1 / ((1 - mp.mpf("2.01") / 100) * (mp.mpf("0.999") - mp.mpf("0.005")) ** 2)
-    top = LN(cL * 4 * K * (logT + 1)) + zs
+    zs = lse([zs, logT + LN(logT) - (logx - LN(2))])        # + N(T)/y, from 2 S_y + 2 y N(T)
+    top = LN(cL * 2 * K * (logT + 1)) + zs
     mg = LN(logx / LN(2) + 1) - LN(25) - 2 * LN(logx)
     return lse([top, mg]) - LN(mp.mpf("0.2499"))
 

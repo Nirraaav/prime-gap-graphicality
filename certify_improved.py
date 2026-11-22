@@ -1,4 +1,4 @@
-"""Certification of Theorem 1.2 (graphicality for log log p_n >= 25.2502).
+"""Certification of Theorem 1.2 (graphicality for log log p_n >= t*, t* printed below, rounded up).
 
 Usage:  python3 certify_improved.py [c0]        (default c0 = 53.989)
 
@@ -14,7 +14,7 @@ from improved import *
 c0 = mp.mpf(sys.argv[1]) if len(sys.argv) > 1 else C0_PUBLISHED
 K = kernel_constant(a=mp.mpf("0.2"))[0]
 kw = dict(c0=c0, Ksum=K, kappa=100, eps=mp.mpf("0.005"))
-print("target eps0 = 40/321 - 0.0004 - 1e-6 =", mp.nstr(mp.mpf(40) / 321 - mp.mpf("0.0004") - mp.mpf("1e-6"), 10))
+print("target eps0 = 40/(1 + 40 c_S) - 0.0004 - 1e-6 =", mp.nstr(mp.mpf(40) / (1 + 40 * SIEVE) - mp.mpf("0.0004") - mp.mpf("1e-6"), 10))
 
 tB = threshold(margin_graphic, dens="B24", **kw)
 tR = threshold(margin_graphic, dens="RAM", **kw)
@@ -24,8 +24,10 @@ while b - a > mp.mpf("1e-4"):
     (a, b) = (m, b) if margin_graphic(m, dens="B24", **kw)[1] <= LOGT_MAX_B else (a, m)
 tcap = a
 print(f"c0={c0}: Lemma 2.6 branch t*={mp.nstr(tB, 7)} (valid to t={mp.nstr(tcap, 7)});  Ramare branch t*={mp.nstr(tR, 7)}")
-print("  Phi(25.2502) =", mp.nstr(margin_graphic(mp.mpf("25.2502"), dens="B24", **kw)[0], 6))
-print("  Phi(29.8168) [Ramare] =", mp.nstr(margin_graphic(mp.mpf("29.8168"), dens="RAM", **kw)[0], 6))
+up = lambda v: mp.ceil(v * 10 ** 4) / 10 ** 4
+tB4, tR4 = up(tB), up(tR)
+print(f"  Phi({tB4}) =", mp.nstr(margin_graphic(tB4, dens="B24", **kw)[0], 6))
+print(f"  Phi({tR4}) [Ramare] =", mp.nstr(margin_graphic(tR4, dens="RAM", **kw)[0], 6))
 
 
 def mono(t0, t1, n, dens):
@@ -33,7 +35,7 @@ def mono(t0, t1, n, dens):
     return max(vals[i + 1] - vals[i] for i in range(n)), vals[0], max(vals)
 
 
-for (t0, t1, n, d) in ((mp.mpf("25.2502"), tcap, 800, "B24"), (mp.mpf("29.8168"), mp.mpf(80), 2000, "RAM")):
+for (t0, t1, n, d) in ((tB4, tcap, 800, "B24"), (tR4, mp.mpf(80), 2000, "RAM")):
     inc, first, worst = mono(t0, t1, n, d)
     print(f"  {d} grid [{mp.nstr(t0, 6)}, {mp.nstr(t1, 6)}]: Phi(left)={mp.nstr(first, 5)}  worst={mp.nstr(worst, 5)}  "
           f"largest step change={mp.nstr(inc, 5)} (<= 0 means nonincreasing)")

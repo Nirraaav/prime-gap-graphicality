@@ -16,12 +16,18 @@ mp.mp.dps = 40
 LN = mp.log
 
 # ---------------- inputs (all cited) ----------------
-C0_PUBLISHED = mp.mpf("53.989")      # Bellotti JMAA 2024 VK constant (cited by BTY 2026)
-C_B, B_B, SIG_B = mp.mpf("1.62e11"), mp.mpf("1.448"), mp.mpf("0.9927")   # Bellotti 2024 Thm 1.1 uniform (conservative sigma range)
+C0_PUBLISHED = mp.mpf("53.989")      # Bellotti JMAA 2024 VK constant (cited by Bellotti-Trudgian-Yang 2026)
+# Lemma 2.6 (Bellotti 2024, App. A last range, exp(481958) < T <= exp(6.7e12)); constant recomputed with the
+# corrections listed in bellotti_extend.py.  Below log T = 481958 we use Ramare only.
+C_B, B_B, SIG_B = mp.mpf("6.5e11"), mp.mpf("1.448"), mp.mpf("0.9927")
+LOGT_MIN_B = mp.mpf(481958)
+# Lemma 3.2 (our large-sieve bound for prime pairs, see sieve_constant.py): for log x >= e^24 and even
+# 2 <= h <= 80 log x, #{p <= x: p + h prime} <= SIEVE * Sg(h) x / log^2 x.
+SIEVE = mp.mpf("8.001")
 LOGT_MAX_B = mp.mpf("6.7e12")
 
 
-def kernel_constant(a=mp.mpf("0.5"), L=LN(mp.mpf("2.01")), J=4000):
+def kernel_constant(a=mp.mpf("0.2"), L=LN(mp.mpf("2.01")), J=4000):
     """sum_j m_j for the trapezoid weight; sup over sigma' in [1,3] done on a grid + margin."""
     def F0():
         # int sup_{s in[1,3]} e^{s z} psi(z) dz
@@ -88,20 +94,25 @@ def block_norm(logy, logh, c0, dens, kappa, eps, Ksum, style="new"):
         ly2 = logy + LN(mp.mpf("2.02"))
         logT = LN(mp.mpf("18.6") * kappa / eps) + logy + LN(ly2) + LN(LN(ly2)) - logh
         cL = 1 / ((1 - mp.mpf("2.01") / kappa) * (mp.mpf("0.999") - eps) ** 2)
-        K = cL * 4 * Ksum * (logT + 1) / logT
+        K = cL * 2 * Ksum * (logT + 1) / logT
     else:  # AFGW constants (corrected two-sided pair count), as in thresholds.py
         logT = LN(8) + logy + 2 * LN(logy) - logh
         K = (2 / mp.mpf("0.249")) * 4 * 153 * 2 * mp.mpf("2.0767") * (logT + LN(3)) / logT
     if logT < LN(mp.mpf("3e12")):
-        return mp.mpf(-10) ** 6, logT
-    return LN(K) + LN(logT) + log_zero_sum(logy, logT, c0, dens), logT
+        return -mp.mpf(10) ** 6, logT
+    if dens == "B24" and logT <= LOGT_MIN_B:
+        dens = "RAM"
+    zs = log_zero_sum(logy, logT, c0, dens)
+    if style == "new":     # sum over all zeros of y^{2 beta} <= 2 S_y + 2 y N(T)  (Step 5 of Proposition 4.2)
+        zs = lse([zs, logT + LN(logT) - logy])
+    return LN(K) + LN(logT) + zs, logT
 
 
 def margin_graphic(t, c0, dens="B24", kappa=40, eps=mp.mpf("0.01"), Ksum=None, style="new",
                    theta_h=mp.mpf("0.02"), lam=40):
-    """Reduction (Thm reduction): enough that S(h0) <= epsP * P, h0 = theta_h sqrt(P)."""
+    """Theorem 3.5: enough that S(h0) <= eps0 * P, h0 = theta_h sqrt(P), eps0 = lam/(1+SIEVE lam) - theta_h^2 - 1e-6."""
     logx = mp.e ** t
-    c1 = mp.mpf(lam) / (1 + 8 * lam)
+    c1 = mp.mpf(lam) / (1 + SIEVE * lam)
     epsP = c1 - theta_h ** 2 - mp.mpf("1e-6")
     logh = LN(theta_h) + logx / 2
     top, logT = block_norm(logx - LN(2), logh, c0, dens, kappa, eps, Ksum, style)
@@ -123,7 +134,8 @@ if __name__ == "__main__":
     Ksum, f0, V = kernel_constant(a=mp.mpf("0.2"))
     print(f"kernel (a=0.2): F0={mp.nstr(f0, 6)}  V<={mp.nstr(V, 6)}  K_Psi<={mp.nstr(Ksum, 6)}")
     cL = 1 / ((1 - mp.mpf("2.01") / 100) * (mp.mpf("0.999") - mp.mpf("0.005")) ** 2)
-    print(f"c_L={mp.nstr(cL, 6)}  4 c_L K_Psi={mp.nstr(4 * cL * Ksum, 6)}")
+    print(f"c_L={mp.nstr(cL, 6)}  2 c_L K_Psi={mp.nstr(2 * cL * Ksum, 6)}  sieve constant c_S={mp.nstr(SIEVE, 6)}  "
+          f"eps0={mp.nstr(40 / (1 + SIEVE * 40) - mp.mpf('0.0004') - mp.mpf('1e-6'), 8)}")
     for c0 in (C0_PUBLISHED, mp.mpf("51.34")):
         old = threshold(margin_graphic, c0=c0, style="old")
         new = threshold(margin_graphic, c0=c0, Ksum=Ksum, kappa=100, eps=mp.mpf("0.005"))

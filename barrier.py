@@ -1,4 +1,4 @@
-"""Section 9: the necessary condition of Theorem 1.7 and the one-zero barrier.
+"""Section 9: the necessary condition of Theorem 1.6 and the one-zero barrier.
 
 (1) Necessary condition: graphic => 2 S(g) <= P + K(g)^2 for every g.  Test on toy sequences.
 (2) One-zero barrier: any L^2 / zero-density argument must at least beat the contribution of ONE

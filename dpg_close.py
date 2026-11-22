@@ -2,7 +2,7 @@
 
 Usage:  python3 dpg_close.py [t0 t1 step]      (default: 29.99 30.43 0.01)
 
-Proposition 5.1: N(sigma, T) <= 1.67e11 T^{1.448(1-sigma)} for sigma in [0.994, 1] and
+Proposition 5.1: N(sigma, T) <= 6.7e11 T^{1.448(1-sigma)} for sigma in [0.994, 1] and
 exp(6.7e12) < T <= exp(2e13). See bellotti_extend.py for the constant.
 Prints the grid steps that cannot be certified (expected: none) and the margins at a few points.
 """
@@ -12,7 +12,7 @@ import improved as im
 from improved import mp
 
 LOGT_MAX_EXT = mp.mpf("2e13")
-SIG_EXT, C_EXT = mp.mpf("0.994"), mp.mpf("1.67e11")
+SIG_EXT, C_EXT = mp.mpf("0.994"), mp.mpf("6.7e11")
 
 
 def margin_ext(t, theta):
